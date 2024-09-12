@@ -33,7 +33,7 @@ function Login() {
               />:''
               }
               <input
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e)=>setEmail(e.target.value)}
                 className=" m-1 p-2 bg-gray-800 text-white rounded"
