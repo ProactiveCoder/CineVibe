@@ -1,17 +1,55 @@
 import React from "react";
 import { useState } from "react";
+import axios from "axios";
+import { API_END_POINT } from "../utils/constant";
+import toast from 'react-hot-toast';
+import { useNavigate } from "react-router-dom";
 
 function Login() {
     const[isLogin,setLogin]=useState(true);
     const[name, setName]=useState("")
     const[email,setEmail]=useState("")
     const[password, setPassword]=useState("")
+    const navigate=useNavigate()
     const loginhandler=()=>{
         setLogin(!isLogin)
     }
-    const getInput = (e)=>{
+    const getInput =async (e)=>{
       e.preventDefault();
-      console.log(name,email,password);
+      
+        if(isLogin){
+          try {
+            const user={email, password}
+            const res=await axios.post(`${API_END_POINT}/login`,user)
+            console.log(res);
+            if(res.data.success){
+              toast.success(res.data.message)
+            }
+            navigate("/home")
+          } catch (error) {
+            toast.error(error.response?.data?.message || "Login failed")
+            console.log(error)
+          }
+          
+        }else{
+          try {
+            const user={name,email, password}
+            const res=await axios.post(`${API_END_POINT}/register`,user)
+            console.log(res);
+            if(res.data.success){
+              toast.success(res.data.message)
+            }
+            setLogin(true)
+          } catch (error) {
+            toast.error(error.response?.data?.message || "Registration failed")
+            console.log(error)
+            
+          }
+        }
+      setName("")
+      setEmail("")
+      setPassword("")
+      
     }
   return (
     <>
