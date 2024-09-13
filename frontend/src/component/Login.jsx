@@ -4,6 +4,8 @@ import axios from "axios";
 import { API_END_POINT } from "../utils/constant";
 import toast from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
+import {useDispatch, useSelector} from 'react-redux'
+import { setLoading, setUser } from "../redux/userSlice";
 
 function Login() {
     const[isLogin,setLogin]=useState(true);
@@ -11,24 +13,30 @@ function Login() {
     const[email,setEmail]=useState("")
     const[password, setPassword]=useState("")
     const navigate=useNavigate()
+    const dispatch= useDispatch()
+    const isLoading=useSelector(store=> store.user.isLoading)
     const loginhandler=()=>{
         setLogin(!isLogin)
     }
     const getInput =async (e)=>{
       e.preventDefault();
-      
+      dispatch(setLoading(true))
         if(isLogin){
+          const user={email, password}
           try {
-            const user={email, password}
             const res=await axios.post(`${API_END_POINT}/login`,user)
             console.log(res);
             if(res.data.success){
               toast.success(res.data.message)
-            }
-            navigate("/home")
+              console.log(res.data.user)
+            dispatch(setUser(res.data.user));
+            navigate("/home") 
+          }
           } catch (error) {
             toast.error(error.response?.data?.message || "Login failed")
             console.log(error)
+          }finally{
+            dispatch(setLoading(false))
           }
           
         }else{
@@ -44,6 +52,9 @@ function Login() {
             toast.error(error.response?.data?.message || "Registration failed")
             console.log(error)
             
+          }
+          finally{
+            dispatch(setLoading(false))
           }
         }
       setName("")
@@ -84,7 +95,7 @@ function Login() {
                 className="m-1 p-2 bg-gray-800 text-white rounded"
                 placeholder="Password"
               />
-              <button className="bg-red-500 w-20  p-2 rounded-lg ">{isLogin?"Login":"SignIN"}</button>
+              <button className="bg-red-500 w-20  p-2 rounded-lg ">{`${isLoading?"loading...":isLogin?"Login":"SignIN"}`}</button>
               <p className="mt-5">{isLogin ?"Create an account ?":"Already have an account ?"} <span className="text-blue-500 cursor-pointer" onClick={loginhandler}>{isLogin? "SignUp":"LogIN"}</span></p>
             </div>
           </form>
