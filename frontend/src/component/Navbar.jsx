@@ -6,9 +6,11 @@ import axios from 'axios';
 import { API_END_POINT } from '../utils/constant';
 import { setUser } from '../redux/userSlice';
 import toast from 'react-hot-toast';
+import { setsearchMOvies } from '../redux/moviesSlice';
 
 function Navbar() {
   const user= useSelector((store)=>store.user.user)
+  const searchMovies=useSelector(store=>store.movie.searchMovies)
   const dispatch=useDispatch()
   const navigate=useNavigate()
 
@@ -24,6 +26,9 @@ function Navbar() {
       console.log(error)
       
     }
+  }
+  const searchHandler=()=>{
+    dispatch(setsearchMOvies())
   }
   return (
     <>
@@ -42,8 +47,8 @@ function Navbar() {
           <button onClick={logoutHandler} className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 transition duration-200">
             Logout
           </button>
-          <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 transition duration-200">
-            Search Movies
+          <button onClick={searchHandler} className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 transition duration-200">
+            {!searchMovies?'Search Movies':'Home'}
           </button>
         </div>
       )
